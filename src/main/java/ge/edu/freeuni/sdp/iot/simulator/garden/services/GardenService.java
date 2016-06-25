@@ -2,10 +2,7 @@ package ge.edu.freeuni.sdp.iot.simulator.garden.services;
 
 import ge.edu.freeuni.sdp.iot.simulator.garden.core.Repository;
 import ge.edu.freeuni.sdp.iot.simulator.garden.core.RepositoryFactory;
-import ge.edu.freeuni.sdp.iot.simulator.garden.model.Garden;
-import ge.edu.freeuni.sdp.iot.simulator.garden.model.Sprinkler;
-import ge.edu.freeuni.sdp.iot.simulator.garden.model.SwitchCommand;
-import ge.edu.freeuni.sdp.iot.simulator.garden.model.SwitchStatus;
+import ge.edu.freeuni.sdp.iot.simulator.garden.model.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -34,6 +31,30 @@ public class GardenService {
         return SwitchStatus.fromGarden(garden);
     }
 
+    @GET
+    @Path("{id}/temperature")
+    public TemperatureStatus getTemperatureStatus(@PathParam("id") String houseId) {
+        Repository repository = getRepository();
+        Garden garden = repository.findGarden(houseId);
+
+        if (garden == null)
+            throw new NotFoundException();
+
+        return TemperatureStatus.fromGarden(garden);
+    }
+
+    @GET
+    @Path("{id}/rain")
+    public RainStatus getRainStatus(@PathParam("id") String houseId) {
+        Repository repository = getRepository();
+        Garden garden = repository.findGarden(houseId);
+
+        if (garden == null)
+            throw new NotFoundException();
+
+        return RainStatus.fromGarden(garden);
+    }
+
     @PUT
     @Path("{id}/sprinkler-switch")
     public SwitchStatus put(@PathParam("id") String houseId, SwitchCommand order) {
@@ -57,5 +78,45 @@ public class GardenService {
 
         return SwitchStatus.fromGarden(garden);
     }
+
+    @PUT
+    @Path("{id}/temperature")
+    public TemperatureStatus putTemperatureOrder(@PathParam("id") String houseId, TemperatureCommand order) {
+        if (!order.isValid())
+            throw new BadRequestException();
+
+        Repository repository = getRepository();
+        Garden garden = repository.findGarden(houseId);
+
+        if (garden == null)
+            throw new NotFoundException();
+
+        Weather weather = garden.getWeather();
+
+        weather.setTempC(order.getTempC());
+        weather.setTempF(order.getTempF());
+
+        return TemperatureStatus.fromGarden(garden);
+    }
+
+    @PUT
+    @Path("{id}/rain")
+    public RainStatus putRainOrder(@PathParam("id") String houseId, RainCommand order) {
+        if (!order.isValid())
+            throw new BadRequestException();
+
+        Repository repository = getRepository();
+        Garden garden = repository.findGarden(houseId);
+
+        if (garden == null)
+            throw new NotFoundException();
+
+        Weather weather = garden.getWeather();
+
+        weather.setWillRain(order.getWillRain());
+
+        return RainStatus.fromGarden(garden);
+    }
+
 
 }

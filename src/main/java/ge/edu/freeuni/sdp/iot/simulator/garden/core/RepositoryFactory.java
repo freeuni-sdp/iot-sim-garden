@@ -3,6 +3,7 @@ package ge.edu.freeuni.sdp.iot.simulator.garden.core;
 import ge.edu.freeuni.sdp.iot.simulator.garden.model.Garden;
 import ge.edu.freeuni.sdp.iot.simulator.garden.model.HouseData;
 import ge.edu.freeuni.sdp.iot.simulator.garden.model.Sprinkler;
+import ge.edu.freeuni.sdp.iot.simulator.garden.model.Weather;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,8 @@ public class RepositoryFactory {
 
     private static Garden initNewGarden(HouseData house) {
         Sprinkler sprinkler = new Sprinkler();
-        return new Garden(house.getHouseId(), sprinkler);
+        Weather weather = new Weather();
+        return new Garden(house.getHouseId(), sprinkler, weather);
     }
 
 }

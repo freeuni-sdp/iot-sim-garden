@@ -6,14 +6,16 @@ package ge.edu.freeuni.sdp.iot.simulator.garden.model;
 public class Garden {
     private String houseId;
     private Sprinkler sprinkler;
+    private Weather weather;
 
     public Garden() {
 
     }
 
-    public Garden(String houseId, Sprinkler sprinkler) {
+    public Garden(String houseId, Sprinkler sprinkler, Weather weather) {
         this.houseId = houseId;
         this.sprinkler = sprinkler;
+        this.weather = weather;
     }
 
     public String getHouseId() {
@@ -30,5 +32,13 @@ public class Garden {
 
     public void setSprinkler(Sprinkler sprinkler) {
         this.sprinkler = sprinkler;
+    }
+
+    public Weather getWeather() {
+        return weather;
+    }
+
+    public void setWeather(Weather weather) {
+        this.weather = weather;
     }
 }
