@@ -2,6 +2,7 @@ package ge.edu.freeuni.sdp.iot.simulator.garden.core;
 
 import ge.edu.freeuni.sdp.iot.simulator.garden.model.Garden;
 import ge.edu.freeuni.sdp.iot.simulator.garden.model.SoilMoistureSensorRequest;
+import ge.edu.freeuni.sdp.iot.simulator.garden.model.SoilSensor;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -15,6 +16,12 @@ import java.util.Random;
 public class SensorThread extends Thread {
 
     private static final long FIX_TIME = 1000 * 60;
+
+    private static final double MAX_MOISTURE = 100;
+    private static final double MIN_MOISTURE = 0;
+
+    private static final double INCREASE_RATE = 0.005;
+    private static final double DECREASE_RATE = 0.002;
 
     private long sleepTime;
     private String serviceUrl;
@@ -32,8 +39,16 @@ public class SensorThread extends Thread {
         long sleepTime;
 
         while (true) {
-            for (Garden g : repository.getGardens())
+            for (Garden g : repository.getGardens()) {
+                SoilSensor sensor = g.getSoilSensor();
+                double oldValue = sensor.getValue();
+                if (g.getSprinkler().isOn())
+                    sensor.setValue(oldValue + (MAX_MOISTURE - oldValue) * INCREASE_RATE);
+                else
+                    sensor.setValue(oldValue + (MIN_MOISTURE - oldValue) * DECREASE_RATE);
+
                 postSensorValue(g);
+            }
 
             sleepTime = this.sleepTime;
 
