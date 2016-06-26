@@ -7,15 +7,17 @@ public class Garden {
     private String houseId;
     private Sprinkler sprinkler;
     private Weather weather;
+    private Camera camera;
 
     public Garden() {
 
     }
 
-    public Garden(String houseId, Sprinkler sprinkler, Weather weather) {
+    public Garden(String houseId, Sprinkler sprinkler, Weather weather, Camera camera) {
         this.houseId = houseId;
         this.sprinkler = sprinkler;
         this.weather = weather;
+        this.camera = camera;
     }
 
     public String getHouseId() {
@@ -40,5 +42,13 @@ public class Garden {
 
     public void setWeather(Weather weather) {
         this.weather = weather;
+    }
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
     }
 }
