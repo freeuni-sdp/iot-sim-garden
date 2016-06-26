@@ -25,4 +25,9 @@ public class InMemoryRepository implements Repository {
     public void updateGarden(Garden garden) {
         gardenMap.put(garden.getHouseId(), garden);
     }
+
+    @Override
+    public Iterable<Garden> getGardens() {
+        return gardenMap.values();
+    }
 }

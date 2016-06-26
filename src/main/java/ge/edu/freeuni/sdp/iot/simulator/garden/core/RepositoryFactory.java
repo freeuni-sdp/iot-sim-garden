@@ -10,7 +10,11 @@ import java.util.Map;
  * Created by Nika Doghonadze
  */
 public class RepositoryFactory {
+
+    private static final long SENSOR_REFRESH_RATE = 100;
+
     private static Repository instance;
+    private static SensorThread sensorThread;
 
     public static synchronized Repository inMemoryRepositoryInstance() {
         if (instance == null) {
@@ -33,6 +37,10 @@ public class RepositoryFactory {
             res.put(house.getHouseId(), newGarden);
         }
 
+        sensorThread = new SensorThread(SENSOR_REFRESH_RATE,
+                "https://iot-soil-moisture-sensor.herokuapp.com");
+        sensorThread.start();
+
         return res;
     }
 
@@ -40,7 +48,9 @@ public class RepositoryFactory {
         Sprinkler sprinkler = new Sprinkler();
         Weather weather = new Weather();
         Camera camera = new Camera();
-        return new Garden(house.getHouseId(), sprinkler, weather, camera);
+        SoilSensor soilSensor = new SoilSensor(0.0);
+
+        return new Garden(house.getHouseId(), sprinkler, weather, camera, soilSensor);
     }
 
 }
