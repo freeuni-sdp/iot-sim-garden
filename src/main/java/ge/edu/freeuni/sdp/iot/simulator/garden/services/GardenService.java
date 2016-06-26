@@ -4,8 +4,17 @@ import ge.edu.freeuni.sdp.iot.simulator.garden.core.Repository;
 import ge.edu.freeuni.sdp.iot.simulator.garden.core.RepositoryFactory;
 import ge.edu.freeuni.sdp.iot.simulator.garden.model.*;
 
+import javax.imageio.ImageIO;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Created by Nika Doghonadze
@@ -118,5 +127,35 @@ public class GardenService {
         return RainStatus.fromGarden(garden);
     }
 
+    @PUT
+    @Path("{id}/camera")
+    public Response changeStage(@PathParam("id") String houseId, UrlDo urlDo) {
+        Garden garden = getRepository().findGarden(houseId);
+
+        if (garden == null)
+            throw new NotFoundException();
+        if (urlDo.getUrl() == null)
+            throw new BadRequestException();
+        garden.getCamera().setImageUrl(urlDo.getUrl());
+
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("{id}/camera")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public byte[] getStageImage(@PathParam("id") String houseId) throws IOException {
+        Garden garden = getRepository().findGarden(houseId);
+        if (garden == null)
+            throw new NotFoundException();
+        String uriString = garden.getCamera().getImageUrl();
+        if (uriString == null)
+            throw new NotFoundException();
+        URL url = new URL(uriString);
+        BufferedImage image = ImageIO.read(url);
+        ByteArrayOutputStream array = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", array);
+        return array.toByteArray();
+    }
 
 }
