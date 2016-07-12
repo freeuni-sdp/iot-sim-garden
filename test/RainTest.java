@@ -64,8 +64,10 @@ public class RainTest extends JerseyTest {
     }
 
     @Test
-    public void bad_get_request_test(){
+    public void bad_request_test(){
         int status = target("/houses/jumberiko/rain").request().get().getStatus();
+        assertEquals(404, status);
+        status = target("/houses/tengizi/rain").request().put(Entity.json("{\"value\":\"yes\"}")).getStatus();
         assertEquals(404, status);
     }
 
