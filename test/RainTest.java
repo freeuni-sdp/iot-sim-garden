@@ -29,22 +29,7 @@ public class RainTest extends JerseyTest {
     }
 
     @Test
-    public void test_put_rain(){
-        String json = getJsonText("https://iot-house-registry.herokuapp.com/houses");
-        String houseID = JsonPath.read(json, "$[0].RowKey._");
-        Entity e = Entity.json("{\"value\": \"no\"}");
-        Response r = target("/houses/" + houseID + "/rain")
-                .request(MediaType.APPLICATION_JSON_TYPE)
-                .put(e);
-        JSONObject jsonObject = new JSONObject(r.readEntity(String.class));
-        assertEquals("no", jsonObject.getString("value"));
-        assertEquals(houseID, jsonObject.getString("house_id"));
-        assertEquals(2, jsonObject.length());
-        assertEquals(200, r.getStatus());
-    }
-
-    @Test
-    public void test_get_rain(){
+    public void test_rain(){
         try {
             String json = getJsonText("https://iot-house-registry.herokuapp.com/houses");
             String houseID = JsonPath.read(json, "$[0].RowKey._");
@@ -57,6 +42,38 @@ public class RainTest extends JerseyTest {
             assertEquals(house_id, houseID);
             assertTrue(value.equals("no") || value.equals("yes"));
             assertEquals(a.size(), 2);
+
+            Entity e = Entity.json("{\"value\": \"" + value + "\"}");
+            Response r = target("/houses/" + houseID + "/rain")
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .put(e);
+            JSONObject jsonObject = new JSONObject(r.readEntity(String.class));
+            assertEquals(value, jsonObject.getString("value"));
+            assertEquals(houseID, jsonObject.getString("house_id"));
+            assertEquals(2, jsonObject.length());
+            assertEquals(200, r.getStatus());
+
+            String differentValue = (value.equals("no") ? "yes" : "no");
+
+            e = Entity.json("{\"value\": \"" + differentValue + "\"}");
+            r = target("/houses/" + houseID + "/rain")
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .put(e);
+            jsonObject = new JSONObject(r.readEntity(String.class));
+            assertEquals(differentValue, jsonObject.getString("value"));
+            assertEquals(houseID, jsonObject.getString("house_id"));
+            assertEquals(2, jsonObject.length());
+            assertEquals(200, r.getStatus());
+
+            e = Entity.json("{\"value\": \"" + value + "\"}");
+            r = target("/houses/" + houseID + "/rain")
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .put(e);
+            jsonObject = new JSONObject(r.readEntity(String.class));
+            assertEquals(value, jsonObject.getString("value"));
+            assertEquals(houseID, jsonObject.getString("house_id"));
+            assertEquals(2, jsonObject.length());
+            assertEquals(200, r.getStatus());
         }
         catch (Exception ex) {
             assertTrue(false);
