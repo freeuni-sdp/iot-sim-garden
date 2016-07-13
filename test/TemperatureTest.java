@@ -42,16 +42,34 @@ public class TemperatureTest extends JerseyTest{
     public void test_temperature_put(){
         try {
             String houseID = get_house_id();
-            Entity e = Entity.json("{\"set_temp_c\": 34,\"set_temp_f\": 93 }");
+
+            String json = getJsonText("https://iot-garden-simulator.herokuapp.com/webapi/houses/"
+                    + houseID + "/temperature");
             Response r = target("/houses/" + houseID + "/temperature")
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .put(e);
+                    .get();
             JSONObject jsonObject = new JSONObject(r.readEntity(String.class));
+            int c = jsonObject.getInt("temp_c");
+            int f = jsonObject.getInt("temp_f");
+
+            Entity e = Entity.json("{\"set_temp_c\": 34,\"set_temp_f\": 93 }");
+            r = target("/houses/" + houseID + "/temperature")
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .put(e);
+            jsonObject = new JSONObject(r.readEntity(String.class));
             assertEquals(3, jsonObject.length());
             int temp_c = jsonObject.getInt("temp_c");
             int temp_f = jsonObject.getInt("temp_f");
+            assertEquals(temp_c, 34);
+            assertEquals(temp_f, 93);
             assertEquals(houseID, jsonObject.getString("house_id"));
             assertEquals(200, r.getStatus());
+
+            e = Entity.json("{\"set_temp_c\": " + temp_c + ",\"set_temp_f\":"+ temp_f + " }");
+            r = target("/houses/" + houseID + "/temperature")
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .put(e);
+
         }
         catch (Exception ex) {
             assertTrue(false);
